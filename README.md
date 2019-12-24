@@ -103,7 +103,7 @@ socket.on("serverChat", new DuckyAction() {
 	}
 });
 ```
-* **Step 3:** end an event and data to socket server with **emit(String key, Object data)** method.
+* **Step 3:** send an event and data to socket server with **emit(String key, Object data)** method.
 ```
 /* loop and receive input from console then send event (emit) 
 to server with data attached is a message from input as a String */
