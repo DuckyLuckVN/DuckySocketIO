@@ -1,7 +1,7 @@
 # DuckySocketIO Overview
 This project is an open-source Java implementation of Socket.IO server. The idea is based on the javascript Socket.IO library.
 
-_This project is still in the process of development, if there is have bugs or complaints please contact me at address **duckyluckvn.@gmai.com**. And my english level is not very good so if there is anything unhappy about this document please forgive me._
+_This project is still in the process of development, if there is have bugs or complaints please contact me at address **duckyluckvn.@gmai.com**. And my english level is not very good so if there is have some mistake about this document please forgive me._
 
 # Features
 
