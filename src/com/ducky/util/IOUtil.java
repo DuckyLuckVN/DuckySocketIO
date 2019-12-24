@@ -15,13 +15,8 @@ public class IOUtil
 	public static Object getObject (InputStream is) 
 			throws IOException, ClassNotFoundException 
 	{
-//		System.out.println("available: " + is.available());
-		if (is.available() > 0)
-		{
 			ObjectInputStream ois = new ObjectInputStream(is);
 			return ois.readObject();
-		}
-		return null;
 	}
 	
 	public static Object getDataPackageSender(Socket socket) 
@@ -49,10 +44,7 @@ public class IOUtil
 	public static DuckyPackageSender getPackageSender(InputStream is) 
 			throws ClassNotFoundException, IOException 
 	{
-		if (is.available() > 0)
-			return (DuckyPackageSender) getObject(is);
-		else
-			return null;
+		return (DuckyPackageSender) getObject(is);
 	}
 	
 	public static DuckyPackageSender getPackageSender(Socket socket) 

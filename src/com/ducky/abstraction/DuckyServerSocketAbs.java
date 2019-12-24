@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -91,6 +93,18 @@ public abstract class DuckyServerSocketAbs implements IDuckyServerSocket
 		}
 	}
 	
+	//bắn sự kiện chỉ với duy nhất 1 socket client truyền vào
+	public void emitOnly(Socket socket, String key, Object data) throws IOException
+	{
+		emitOnly(socket, new DuckyPackageSender(key, data));
+	}
+	
+	//bắn sự kiện chỉ với duy nhất 1 socket client truyền vào
+	public void emitOnly(Socket socket, DuckyPackageSender packageSender) throws IOException
+	{
+		IOUtil.sendPackageSender(socket, packageSender);
+	}
+	
 	//Khởi động server socket để nhận các kết nối socket và xử lý
 	public void startServer() throws IOException 
 	{
@@ -100,7 +114,7 @@ public abstract class DuckyServerSocketAbs implements IDuckyServerSocket
 			//chờ và nhận socket client kết nối đến
 			Socket socket = this.serverSocket.accept();
 			
-			System.out.println("client: " + ++count);
+//			System.out.println("client: " + ++count);
 			//lưu socket client vào array list
 			this.sockets.add(socket);
 			

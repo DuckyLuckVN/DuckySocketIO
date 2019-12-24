@@ -1,6 +1,7 @@
 package com.ducky.thread;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.HashMap;
 
@@ -30,21 +31,23 @@ public class DuckyServerThread extends Thread{
 			
 			try
 			{
-				System.out.println("server wait....");
-				socket.getInputStream();
+//				System.out.println("server wait....");
 				//nhận về gói dữ liệu socket con gửi lên, sau đó lấy key, chạy sự kiện và trả về cho socket client
-				DuckyPackageSender packageSender = IOUtil.getPackageSender(socket);
+//				DuckyPackageSender packageSender = IOUtil.getPackageSender(socket);
+//				DuckyPackageSender packageSender = (DuckyPackageSender) new ObjectInputStream(socket.getInputStream()).readObject();
+				DuckyPackageSender packageSender = (DuckyPackageSender) IOUtil.getObject(socket.getInputStream());
 				
 				//chạy sự kiện với key truyền lên
 				if (packageSender != null && eventHalders.get(packageSender.getKey()) != null) 
 				{
 					eventHalders.get(packageSender.getKey()).doActionOnServer(socket, packageSender.getData());
 				}
-				System.out.println("server done");
+//				System.out.println("server done");
 				
 			} 
 			catch (IOException e) 
 			{
+				shutDown();
 				e.printStackTrace();
 			} 
 			catch (ClassNotFoundException e) 
