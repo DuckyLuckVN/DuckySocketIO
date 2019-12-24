@@ -28,98 +28,98 @@ I will make a tutorial based on an example of using socket to chat together (bet
 **On Server Side:** 
 * **Step 1:** Using **DuckyServerSocket** to to create a new instance for **ServerSocket**.
 ```
-	DuckyServerSocket serverSocket = new DuckyServerSocket();
+DuckyServerSocket serverSocket = new DuckyServerSocket();
 ```
 * **Step 2:** Using method **createServer(int port)** to setup port working for ServerSocket.
 ```
-	//I setup socket server to working with in port 5555
-	serverSocket.createServer(5555);
+//I setup socket server to working with in port 5555
+serverSocket.createServer(5555);
 ```
 * **Step 3:** Using method **on(String key, DuckyAction action)** to define a handler to catch an event sent (emit) from a socket client with a key and an action will called when event was catched with method **doActionOnServer(Socket socket, Object data)**.
 
 ```
-	serverSocket.on("clientChat", new DuckyAction() 
-    {
-			/*
-			 * param - socket: the object representing the socket is working with the socket server
-			 * param - data: the data is sent (emit) from the socket client (nullable)
-			 */
-			@Override
-			public void doActionOnServer(Socket socket, Object data)
-			{
-				try 
-				{
-                	System.out.println("client sent chat: " + data);
+serverSocket.on("clientChat", new DuckyAction() 
+{
+	/*
+	* param - socket: the object representing the socket is working with the socket server
+	* param - data: the data is sent (emit) from the socket client (nullable)
+	*/
+	@Override
+	public void doActionOnServer(Socket socket, Object data)
+	{
+		try 
+		{
+        	System.out.println("client sent chat: " + data);
                     
-					/*
-					 * after receiving the "clientChat" event from the client socket
-					 * serverSocket will send back (emit) an event with the key "serverChat" to the client
-					 * with the data attached as a String "this is message from socket server ^^!"
-					 */
-					serverSocket.emit("serverChat", "this is message from socket server ^^!");
-				} 
-				catch (IOException e) 
-				{
-					e.printStackTrace();
-				}
-			}
-		});
+			/*
+			* after receiving the "clientChat" event from the client socket
+			* serverSocket will send back (emit) an event with the key "serverChat" to the client
+			* with the data attached as a String "this is message from socket server ^^!"
+			*/
+			serverSocket.emit("serverChat", "this is message from socket server ^^!");
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+});
 ```
 
 * **Step 4:** Send an event and data to all socket clients with **emit(String key, Object data)** method.
 ```
-	/*
-    * after receiving the "clientChat" event from the client socket
-    * serverSocket will send back (emit) an event with the key "serverChat" to the client
-    * with the data attached as a String "this is message from socket server ^^!"
-    */
-    serverSocket.emit("serverChat", "this is message from socket server ^^!");
+/*
+* after receiving the "clientChat" event from the client socket
+* serverSocket will send back (emit) an event with the key "serverChat" to the client
+* with the data attached as a String "this is message from socket server ^^!"
+*/
+serverSocket.emit("serverChat", "this is message from socket server ^^!");
 ```
 * **Step 5:** Start socket server with method **startServer()**. And now socket server is waiting and do something we defined before when socket clients connected.
 
 ```
-	serverSocket.startServer();
+serverSocket.startServer();
 ```
 
 
 **On Client Side:** 
 * **Step 1:** Using **DuckySocket** to to create a new instance for **Socket**.
 ```
-	DuckySocket socket = new DuckySocket();
+DuckySocket socket = new DuckySocket();
 ```
 
 
 * **Step 2:** Using method **on(String key, DuckyAction action)** to define a handler to catch an event sent (emit) from a socket server with a key and an action will called when event was catched with method **doActionOnClient(Socket socket, Object data)**.
 ```
-	socket.on("serverChat", new DuckyAction() {
-			/*
-			 * param - socket: the object representing the socket is working with the socket server
-			 * param - data: the data is sent (emit) from the socket client (nullable)
-			 */
-			@Override
-			public void doActionOnClient(Socket socket, Object data) 
-			{
-				System.out.println("server sent chat: " + data);
-			}
-		});
+socket.on("serverChat", new DuckyAction() {
+    /*
+    * param - socket: the object representing the socket is working with the socket server
+    * param - data: the data is sent (emit) from the socket client (nullable)
+    */
+	@Override
+	public void doActionOnClient(Socket socket, Object data) 
+	{
+		System.out.println("server sent chat: " + data);
+	}
+});
 ```
 * **Step 3:** end an event and data to socket server with **emit(String key, Object data)** method.
 ```
-	/* loop and receive input from console then send event (emit) 
-    to server with data attached is a message from input as a String */
-	while (true) 
-	{
-		String message = new Scanner(System.in).nextLine();
-		System.out.println("me: " + message);
-			
-		//emit an event with key is "clientChat" to socket server with data attached is message
-		socket.emit("clientChat", message);
-	}
+/* loop and receive input from console then send event (emit) 
+to server with data attached is a message from input as a String */
+while (true) 
+{
+    String message = new Scanner(System.in).nextLine();
+    System.out.println("me: " + message);
+
+    //emit an event with key is "clientChat" to socket server with data attached is message
+    socket.emit("clientChat", message);
+}
 ```
 
 * **Step 4:** Using method **connectToServer(String host, int port)** to connect socket to a socket server.
 ```
-	socket.connectToServer("localhost", 5555);
+socket.connectToServer("localhost", 5555);
 ```
 
 **note:** you can call the **connectToServer()** on client side and **createServer()** on server side before you define some event to catched from server or client. It's okay. and in the process of running, you can define more the handler to catched event.
