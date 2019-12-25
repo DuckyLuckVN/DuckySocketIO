@@ -8,10 +8,11 @@ import java.io.Serializable;
  * - data: là dữ liệu gửi đi kèm theo (nếu có)
  */
 public class DuckyPackageSender implements Serializable{
-	/**
-	 * 
-	 */
+	
+	public static final String KEY_SOCKET_GROUP_DEFAULT = "default";
+	
 	private static final long serialVersionUID = 1L;
+	private String keySocketGroup = KEY_SOCKET_GROUP_DEFAULT;
 	private String key;
 	private Object data;
 	
@@ -40,6 +41,17 @@ public class DuckyPackageSender implements Serializable{
 	public void setData(Object data) {
 		this.data = data;
 	}
+
+	public String getKeySocketGroup() {
+		return keySocketGroup;
+	}
+
+	public void setKeySocketGroup(String keySocketGroup) {
+		this.keySocketGroup = keySocketGroup;
+	}
+
+	
+	
 	
 		
 }

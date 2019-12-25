@@ -13,4 +13,5 @@ public interface IDuckyServerSocket {
 	public void on(String key, DuckyAction duckyAction);
 	public void emit(String key, Object data) throws IOException;
 	public void broadcast(Socket socket, String key, Object data) throws IOException;
+	public void defineInitSocket();
 }

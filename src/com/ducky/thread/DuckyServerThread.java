@@ -5,60 +5,128 @@ import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.HashMap;
 
+import com.ducky.abstraction.DuckyServerThreadAbs;
+import com.ducky.constant.SocketConstant;
 import com.ducky.interfaces.DuckyAction;
+import com.ducky.interfaces.IDuckyServerThread;
 import com.ducky.model.DuckyPackageSender;
 import com.ducky.util.IOUtil;
 
-public class DuckyServerThread extends Thread{
+public class DuckyServerThread extends DuckyServerThreadAbs {
 	
-	Socket socket = null;
-	HashMap<String, DuckyAction> eventHalders = null;
-	private boolean isEnable = true;
+	private DuckyAction action;
+	private boolean isAuthGroupSocketOnServer = false;
+	private String keySocketGroup = SocketConstant.KEY_SOCEKT_GROUP_DEFAULT;
+	
+	public DuckyServerThread(Socket socket, HashMap<String, DuckyAction> eventHalders, boolean isAuthGroupSocketOnServer) 
+	{
+		super(socket, eventHalders);
+		this.isAuthGroupSocketOnServer = isAuthGroupSocketOnServer;
+		
+		//khởi tạo hành động cho thread
+		if(isAuthGroupSocketOnServer) 
+		{
+			setActionAuthOnServer();
+		}
+		else
+		{
+			setActionAuthOnClient();
+		}
+	}
 	
 	public DuckyServerThread(Socket socket, HashMap<String, DuckyAction> eventHalders) 
 	{
-		this.socket = socket;
-		this.eventHalders = eventHalders;
+		super(socket, eventHalders);
 	}
 	
 	//Nội dung chính của hoạt động trong thread socket
 	@Override
 	public void run() 
 	{
-		while ( isEnable && !socket.isClosed() ) 
-		{
-			if (isEnable == false) { break; }
-			
-			try
-			{
-//				System.out.println("server wait....");
-				//nhận về gói dữ liệu socket con gửi lên, sau đó lấy key, chạy sự kiện và trả về cho socket client
-//				DuckyPackageSender packageSender = IOUtil.getPackageSender(socket);
-//				DuckyPackageSender packageSender = (DuckyPackageSender) new ObjectInputStream(socket.getInputStream()).readObject();
-				DuckyPackageSender packageSender = (DuckyPackageSender) IOUtil.getObject(socket.getInputStream());
-				
-				//chạy sự kiện với key truyền lên
-				if (packageSender != null && eventHalders.get(packageSender.getKey()) != null) 
-				{
-					eventHalders.get(packageSender.getKey()).doActionOnServer(socket, packageSender.getData());
-				}
-//				System.out.println("server done");
-				
-			} 
-			catch (IOException e) 
-			{
-				shutDown();
-				e.printStackTrace();
-			} 
-			catch (ClassNotFoundException e) 
-			{
-				e.printStackTrace();
-			}
-			
-		}
-		
+		action.doActionOnThread();
 	}
 	
-	public void shutDown() { this.isEnable = false; }
+	public void setActionAuthOnServer()
+	{
+		this.action = new DuckyAction() {
+			@Override
+			public void doActionOnThread() {
+				while ( isEnable && !socket.isClosed() ) 
+				{
+					if (isEnable == false) { break; }
+					
+					try
+					{
+						DuckyPackageSender packageSender = (DuckyPackageSender) IOUtil.getObject(socket.getInputStream());
+						
+						//chạy sự kiện với key truyền lên
+						if (packageSender != null && eventHalders.get( packageSender.getKey() ) != null) 
+						{
+							//kiểm tra nếu keyGroup từ packageData gửi lên có trùng với socket đang giao tiếp không
+							//nếu trùng thì mới thực hiện action
+							if(packageSender.getKeySocketGroup().equals(DuckyServerThread.this.socket))
+								eventHalders.get(packageSender.getKey())
+								.doActionOnServer(socket, packageSender.getKeySocketGroup(), packageSender.getData());
+						}
+					} 
+					catch (IOException e) 
+					{
+						shutDown();
+						e.printStackTrace();
+					} 
+					catch (ClassNotFoundException e) 
+					{
+						e.printStackTrace();
+					}
+					
+				}
+			}
+		};
+	}
+	
+	public void setActionAuthOnClient()
+	{
+		this.action = new DuckyAction() {
+			@Override
+			public void doActionOnThread() {
+				while ( isEnable && !socket.isClosed() ) 
+				{
+					if (isEnable == false) { break; }
+					
+					try
+					{
+						DuckyPackageSender packageSender = (DuckyPackageSender) IOUtil.getObject(socket.getInputStream());
+						
+						//chạy sự kiện với key truyền lên
+						if (packageSender != null && eventHalders.get( packageSender.getKey() ) != null) 
+						{
+							eventHalders.get(packageSender.getKey())
+										.doActionOnServer(socket, packageSender.getKeySocketGroup(), packageSender.getData());
+						}
+					} 
+					catch (IOException e) 
+					{
+						shutDown();
+						e.printStackTrace();
+					} 
+					catch (ClassNotFoundException e) 
+					{
+						e.printStackTrace();
+					}
+					
+				}
+			}
+		};
+	}
+
+	public String getKeySocketGroup() {
+		return keySocketGroup;
+	}
+
+	public void setKeySocketGroup(String keySocketGroup) {
+		this.keySocketGroup = keySocketGroup;
+	}
+	
+	
 	
 }

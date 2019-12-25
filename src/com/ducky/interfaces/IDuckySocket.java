@@ -11,4 +11,5 @@ public interface IDuckySocket {
 	public void closeConnect() throws IOException;
 	
 	public Socket getSocket();
+	public void defineInitSocket();
 }
