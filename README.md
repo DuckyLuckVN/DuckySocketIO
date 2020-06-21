@@ -13,7 +13,7 @@ _This project is still in the process of development, if there is have bugs or c
 * No 3rd library required
 
 # Performance
-To stress test the solution i run 3000 socket clients and managed to peak at total of about 30 000 messages per second with less than 1 second average delay.
+To stress test the solution I ran 3000 socket clients and managed to peak at total of about 30 000 messages per second with less than 1 second average delay.
 
 I ran at the same time 3000 socket clients and ServerSocket on my laptop and everything is still under control.
 
